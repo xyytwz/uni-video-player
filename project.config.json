@@ -1,0 +1,15 @@
+{
+  "description": "video-player-xyyt 示例工程（微信小程序）",
+  "packOptions": { "ignore": [] },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "2.30.0",
+  "appid": "touristappid",
+  "projectname": "uni-video-demo",
+  "condition": {}
+}
