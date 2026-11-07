@@ -1,0 +1,148 @@
+{
+  "id": "xyyt-video-player",
+  "displayName": "xyyt-video-player 鸿蒙跨端视频播放器",
+  "version": "1.0.0",
+  "description": "以鸿蒙（HarmonyOS NEXT / App-Harmony）为主目标平台的跨端视频播放组件，兼容 App Android/iOS、微信小程序、H5；支持全屏、播放/暂停、快进快退、拖动进度",
+  "keywords": [
+    "视频",
+    "播放器",
+    "全屏",
+    "video",
+    "跨端",
+    "鸿蒙",
+    "harmony"
+  ],
+  "engines": {
+    "HBuilderX": "^4.14"
+  },
+  "dcloudext": {
+    "sale": {
+      "regular": {
+        "price": "0.00"
+      },
+      "template": {
+        "pc": {
+          "price": "0.00"
+        },
+        "wap": {
+          "price": "0.00"
+        }
+      },
+      "vue": {
+        "regular": {
+          "price": "0.00"
+        }
+      }
+    },
+    "contact": {
+      "qq": ""
+    },
+    "declaration": {
+      "ads": "无",
+      "data": "不收集数据",
+      "permissions": "无"
+    },
+    "npmurl": "",
+    "type": "component-vue",
+    "pluginPos": "uni-app",
+    "moduleType": "ui-component",
+    "isLibrary": false,
+    "minHBuilderX": "4.14",
+    "darkmode": "n",
+    "i18n": "n",
+    "widescreen": "n"
+  },
+  "uni_modules": {
+    "dependencies": [],
+    "jsPlugins": [],
+    "encryptFiles": [],
+    "cover": {
+      "type": "png",
+      "width": "600px",
+      "height": "800px"
+    },
+    "titleColor": "#000000",
+    "platforms": {
+      "cloud": {
+        "tcb": "n",
+        "aliyun": "n"
+      },
+      "client": {
+        "Vue": {
+          "vue2": "n",
+          "vue3": "y"
+        },
+        "App": {
+          "app-vue": "y",
+          "app-nvue": "n"
+        },
+        "web": {
+          "chrome": "y",
+          "ie": "u",
+          "edge": "y",
+          "firefox": "y",
+          "safari": "y"
+        },
+        "小程序": {
+          "微信": "y",
+          "阿里": "u",
+          "百度": "u",
+          "字节跳动": "u",
+          "QQ": "u"
+        },
+        "快应用": {
+          "华为": "u",
+          "联盟": "u"
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xyytwz/uni-video-player"
+  },
+  "bugs": {
+    "url": "https://github.com/xyytwz/uni-video-player/issues"
+  },
+  "platforms": {
+    "note": "repository.url 已填 GitHub 仓库（上架前请确保仓库已推送最新代码）；cover 效果图需在上架页面上传（建议 2-5 张）",
+    "cloud": {
+      "tcb": "n",
+      "aliyun": "n"
+    },
+    "client": {
+      "Vue": {
+        "vue2": "n",
+        "vue3": "y"
+      },
+      "App": {
+        "app-vue": "y",
+        "app-nvue": "y"
+      },
+      "H5-mobile": {
+        "Safari": "y",
+        "Android Browser": "y",
+        "微信浏览器(Android)": "y",
+        "QQ浏览器(Android)": "y"
+      },
+      "H5-pc": {
+        "Chrome": "y",
+        "IE": "u",
+        "Edge": "y",
+        "Firefox": "y",
+        "Safari": "y"
+      },
+      "小程序": {
+        "微信": "y",
+        "阿里": "u",
+        "百度": "u",
+        "字节跳动": "u",
+        "QQ": "u"
+      },
+      "快应用": {
+        "华为": "u",
+        "联盟": "u"
+      }
+    }
+  }
+}

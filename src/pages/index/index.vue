@@ -1,9 +1,9 @@
 <template>
   <view class="demo-page">
-    <view class="demo-title">video-player-xyyt 跨端视频播放示例</view>
+    <view class="demo-title">xyyt-video-player 跨端视频播放示例</view>
 
     <!-- 通过 easycom 自动引入 uni_modules 组件，无需手动 import -->
-    <video-player-xyyt
+    <xyyt-video-player
       ref="playerRef"
       :src="videoUrl"
       :poster="posterUrl"

@@ -2,5 +2,6 @@ node_modules/
 unpackage/
 dist/
 .hbuilderx/
+.qoder/
 *.local
 .DS_Store

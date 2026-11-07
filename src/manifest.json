@@ -1,42 +1,47 @@
 {
-  "name": "uni-video-demo",
-  "appid": "",
-  "description": "video-player-xyyt 跨端视频插件示例",
-  "versionName": "1.0.0",
-  "versionCode": "100",
-  "transformVite": true,
-  "app-plus": {
-    "usingComponents": true,
-    "nvueStyleCompiler": "uni-app",
-    "compilerVersion": 3,
-    "screenOrientation": ["portrait-primary", "landscape-primary", "landscape-secondary"],
-    "distribute": {
-      "android": {
-        "permissions": [
-          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
-          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>"
-        ]
-      },
-      "ios": {},
-      "sdkConfigs": {}
-    }
-  },
-  "quickapp": {},
-  "mp-weixin": {
-    "appid": "",
-    "setting": {
-      "urlCheck": false,
-      "es6": true,
-      "postcss": true,
-      "minified": true
+    "name" : "uni-video-demo",
+    "appid" : "__UNI__54C406B",
+    "description" : "xyyt-video-player 跨端视频插件示例",
+    "versionName" : "1.0.0",
+    "versionCode" : "100",
+    "transformVite" : true,
+    "app-plus" : {
+        "usingComponents" : true,
+        "nvueStyleCompiler" : "uni-app",
+        "compilerVersion" : 3,
+        "screenOrientation" : [ "portrait-primary", "landscape-primary", "landscape-secondary" ],
+        "distribute" : {
+            "android" : {
+                "permissions" : [
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>"
+                ]
+            },
+            "ios" : {},
+            "sdkConfigs" : {}
+        }
     },
-    "usingComponents": true
-  },
-  "h5": {
-    "title": "video-player-xyyt 示例",
-    "router": {
-      "mode": "hash"
+    "quickapp" : {},
+    "mp-weixin" : {
+        "appid" : "",
+        "setting" : {
+            "urlCheck" : false,
+            "es6" : true,
+            "postcss" : true,
+            "minified" : true
+        },
+        "usingComponents" : true
+    },
+    "h5" : {
+        "title" : "xyyt-video-player 示例",
+        "router" : {
+            "mode" : "hash"
+        }
+    },
+    "vueVersion" : "3",
+    "app-harmony" : {
+        "distribute" : {
+            "bundleName" : "har.ble.compat.demo"
+        }
     }
-  },
-  "vueVersion": "3"
 }

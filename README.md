@@ -1,8 +1,19 @@
 # uni-video-demo
 
-`video-player-xyyt` 跨端视频播放插件的**示例工程**，一份源码可编译为 **App（Android/iOS/鸿蒙）**、**H5**、**微信小程序**。
+`xyyt-video-player` 是以**鸿蒙（HarmonyOS NEXT / App-Harmony）为主目标平台**的跨端视频播放插件的**示例工程**，同一份源码兼容 **App（Android/iOS）**、**H5**、**微信小程序**。
 
-插件本体位于：`src/uni_modules/video-player-xyyt/`，示例页位于 `src/pages/index/index.vue`。
+插件本体位于：`src/uni_modules/xyyt-video-player/`，示例页位于 `src/pages/index/index.vue`。
+
+## 平台定位与验证状态
+
+| 平台 | 定位 | 验证状态 |
+| --- | --- | --- |
+| App（鸿蒙 HarmonyOS NEXT） | 主目标 | 编译验证通过（`build:app-harmony`），建议真机复验 |
+| App（Android / iOS） | 兼容 | 编译验证通过，建议真机复验 |
+| 微信小程序 | 兼容 | 开发者工具 + 真机实测通过 |
+| H5 | 兼容 | 浏览器实测通过 |
+
+各端差异与踩坑说明见插件文档：[`src/uni_modules/xyyt-video-player/readme.md`](src/uni_modules/xyyt-video-player/readme.md)。
 
 ## 环境
 
@@ -14,6 +25,9 @@
 ```bash
 # 安装依赖
 npm install
+
+# 鸿蒙（主目标平台，配合 HBuilderX 鸿蒙基座 / DevEco Studio）
+npm run dev:app-harmony
 
 # H5
 npm run dev:h5            # 浏览器访问 vite 输出的本地地址
@@ -59,20 +73,28 @@ uni-video-demo/
     ├── pages/
     │   └── index/index.vue       # 使用插件的示例页
     └── uni_modules/
-        └── video-player-xyyt/    # ← 插件（可整目录复制到其他工程）
+        └── xyyt-video-player/    # ← 插件（可整目录复制到其他工程）
             ├── package.json       # uni_modules 元信息
             ├── readme.md
             ├── changelog.md
             └── components/
-                └── video-player-xyyt/
-                    └── video-player-xyyt.vue
+                └── xyyt-video-player/
+                    └── xyyt-video-player.vue
 ```
 
 ## 复用插件到其他工程
 
-把 `src/uni_modules/video-player-xyyt` 整个目录拷贝到目标工程的 `src/uni_modules/`（或根 `uni_modules/`）即可，组件按 easycom 自动注册，直接用 `<video-player-xyyt />`。用法与 Props/Events/方法见插件 `readme.md`。
+把 `src/uni_modules/xyyt-video-player` 整个目录拷贝到目标工程的 `src/uni_modules/`（或根 `uni_modules/`）即可，组件按 easycom 自动注册，直接用 `<xyyt-video-player />`。用法与 Props/Events/方法见插件 `readme.md`。
 
 ## 提示
 
 - 示例页 `videoUrl` 为公网测试地址，请替换为你自己的可访问视频。
 - 所有报错若为「找不到模块 vue / uni」，是尚未 `npm install`，安装依赖后消失。
+- 鸿蒙真机运行时 HBuilderX 会把本机签名配置（`manifest.json` 的 `app-harmony.distribute.signingConfigs`，含证书路径与密码）自动写入工程；**提交/上传前请删除该节**（下次真机运行会自动重建），避免敏感信息入库入市。
+
+## 文档与反馈
+
+- 插件完整文档（Props / Events / 方法 / 平台说明 / FAQ）：[`src/uni_modules/xyyt-video-player/readme.md`](src/uni_modules/xyyt-video-player/readme.md)
+- 版本变更记录：[`src/uni_modules/xyyt-video-player/changelog.md`](src/uni_modules/xyyt-video-player/changelog.md)
+- 问题反馈：[GitHub Issues](https://github.com/xyytwz/uni-video-player/issues)
+- 插件市场：DCloud 插件市场搜索 `xyyt-video-player`

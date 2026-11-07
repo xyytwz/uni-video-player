@@ -2,7 +2,7 @@
   "name": "uni-video-demo",
   "version": "1.0.0",
   "private": true,
-  "description": "video-player-xyyt 跨端视频播放插件示例工程（可编译为 app / h5 / 小程序）",
+  "description": "xyyt-video-player 跨端视频播放插件示例工程（可编译为 app / h5 / 小程序）",
   "scripts": {
     "dev:h5": "uni -p h5",
     "dev:mp-weixin": "uni -p mp-weixin",
@@ -23,7 +23,8 @@
     "@dcloudio/uni-components": "3.0.0-4070620250821001",
     "@dcloudio/uni-h5": "3.0.0-4070620250821001",
     "@dcloudio/uni-mp-weixin": "3.0.0-4070620250821001",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.8",

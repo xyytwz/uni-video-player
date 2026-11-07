@@ -2,7 +2,7 @@
   import { onLaunch } from '@dcloudio/uni-app';
 
   onLaunch(() => {
-    console.log('uni-video-demo App Launch');
+    // 应用启动钩子：暂无初始化逻辑
   });
 </script>
 
