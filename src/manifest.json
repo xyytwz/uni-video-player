@@ -46,7 +46,7 @@
     "vueVersion" : "3",
     "app-harmony" : {
         "distribute" : {
-            "bundleName" : "har.ble.compat.demo"
+            "bundleName" : "uni.video.player.demo"
         }
     }
 }

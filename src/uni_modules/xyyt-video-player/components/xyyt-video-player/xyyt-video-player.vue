@@ -151,7 +151,7 @@
   // #endif
   // 注意：show-center-play-btn 与 controls 是相互独立的开关，不随 appNativeControls 联动：
   // 非 Android 端需固定 false（否则原生中央按钮与自定义按钮叠加）；Android 原生控件自带
-  // 中央按钮，不受该属性影响（与 1.0.1 真机验证行为一致）。
+  // 中央按钮，不受该属性影响（Android 真机验证行为）。
 
   const isPlaying = ref(false);
   const isFullScreen = ref(false);

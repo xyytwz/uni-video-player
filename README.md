@@ -14,14 +14,17 @@
 | 微信小程序 | 兼容 | **开发者工具 + 真机验证通过** |
 | H5 | 兼容 | **浏览器验证通过** |
 
-控制栏策略：H5 / 鸿蒙 / 微信小程序为自定义控制栏（cover-view + 原生 slider 进度条）；App Android/iOS 为系统原生控件（真机实测 Android 自定义控制栏会导致原生 video 黑屏无法播放，1.0.2 起固定回退），各端渲染路径由条件编译隔离。
+控制栏策略：H5 / 鸿蒙 / 微信小程序为自定义控制栏（cover-view + 原生 slider 进度条）；App Android/iOS 为系统原生控件（真机实测 Android 自定义控制栏会导致原生 video 黑屏无法播放，已固定回退），各端渲染路径由条件编译隔离。
 
 各端差异与踩坑说明见插件文档：[`src/uni_modules/xyyt-video-player/readme.md`](src/uni_modules/xyyt-video-player/readme.md)。
 
 ## 环境
 
-- HBuilderX（App / 鸿蒙真机运行推荐）或 CLI（Node ≥ 16）
+- **HBuilderX ≥ 5.34**（App / 鸿蒙真机运行推荐）或 CLI（Node ≥ 16）；插件元信息中的 `engines` / `minHBuilderX` 也按此声明
 - Vue3 + Vite + `@dcloudio/*` 3.0.0 系列（见 `package.json`）
+- 仅支持 **uni-app** 工程；**uni-app x 工程不可用**（本组件无 uvue/UTS 实现，已在 `platforms` 中声明为不支持）
+- 5.34 是本示例完成四端编译与真机验证的编译器版本；官方鸿蒙 Next 支持线虽自 4.27 起，但 4.27 ~ 5.34 区间未实测，故不对外承诺兼容
+- 设备 / 基础库下限：鸿蒙 HarmonyOS NEXT **API 12**+（NEXT 5.0）、App Android **5.0**+（API level 21）、微信小程序基础库 **2.20.1**+；iOS 未做真机验证，不声明具体版本
 
 ## 运行（CLI）
 

@@ -1,7 +1,7 @@
 {
   "id": "xyyt-video-player",
   "displayName": "xyyt-video-player 鸿蒙跨端视频播放器",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "以鸿蒙（HarmonyOS NEXT / App-Harmony）为主目标平台的跨端视频播放组件，兼容 App Android/iOS、微信小程序、H5；支持全屏、播放/暂停、快进快退、拖动进度",
   "keywords": [
     "视频",
@@ -13,9 +13,9 @@
     "harmony"
   ],
   "engines": {
-    "HBuilderX": "^4.14",
-    "uni-app": "^3.1.0",
-    "uni-app-x": "^3.1.0"
+    "HBuilderX": "^5.34",
+    "uni-app": "^5.34",
+    "uni-app-x": ""
   },
   "dcloudext": {
     "sale": {
@@ -49,7 +49,7 @@
     "pluginPos": "uni-app",
     "moduleType": "ui-component",
     "isLibrary": false,
-    "minHBuilderX": "4.14",
+    "minHBuilderX": "5.34",
     "darkmode": "n",
     "i18n": "n",
     "widescreen": "n",
@@ -106,16 +106,16 @@
         },
         "uni-app-x": {
           "web": {
-            "safari": "u",
-            "chrome": "u"
+            "safari": "n",
+            "chrome": "n"
           },
           "app": {
-            "android": "u",
-            "ios": "u",
-            "harmony": "u"
+            "android": "n",
+            "ios": "n",
+            "harmony": "n"
           },
           "mp": {
-            "weixin": "u"
+            "weixin": "n"
           }
         }
       }
@@ -141,7 +141,7 @@
       },
       "App": {
         "app-vue": "y",
-        "app-nvue": "y"
+        "app-nvue": "n"
       },
       "H5-mobile": {
         "Safari": "y",
