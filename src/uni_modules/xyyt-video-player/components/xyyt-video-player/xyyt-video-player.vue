@@ -10,81 +10,73 @@
       :loop="loop"
       :initial-time="initialTime"
       :object-fit="objectFit"
-      :enable-progress-gesture="false"
-      :show-progress="false"
-      :controls="false"
+      :controls="appNativeControls"
       :show-center-play-btn="false"
-      :show-play-btn="false"
-      :show-fullscreen-btn="false"
       @play="onPlay"
       @pause="onPause"
       @ended="onEnded"
       @timeupdate="onTimeUpdate"
       @loadedmetadata="onLoadedMetadata"
       @fullscreenchange="onFullScreenChange"
-      @waiting="onWaiting"
       @error="onError"
       @click="togglePlay"
     >
-      <!-- 居中播放按钮：暂停 / 未开始 / 播放结束时显示 -->
-      <view v-if="!isPlaying" class="qvp-center" @click.stop="togglePlay">
-        <view class="qvp-center-btn">
-          <view class="qvp-ico-play" />
-        </view>
-      </view>
+      <!-- 自定义控制栏仅用于非 Android 平台（H5/鸿蒙/微信小程序）；
+           Android 真机实测：cover-view + slider 混合方案导致原生 video 黑屏且无法播放，
+           改用系统原生控件（appNativeControls），样式由系统决定、不可自定义。 -->
+      <!-- #ifndef APP-PLUS -->
+      <cover-view v-if="!isPlaying" class="qvp-center" @click.stop="togglePlay">
+        <cover-view class="qvp-center-btn">
+          <cover-view class="qvp-ico-play" />
+        </cover-view>
+      </cover-view>
+      <!-- #endif -->
 
-      <!-- 底部控制栏：播放/暂停 + 时间 + 拖动进度 + 快退/快进 + 全屏 -->
-      <view class="qvp-bar" @click.stop>
-        <view class="qvp-btn qvp-btn--play" @click.stop="togglePlay">
-          <view v-if="isPlaying" class="qvp-ico-pause"><view class="qvp-pause-bar" /><view class="qvp-pause-bar" /></view>
-          <view v-else class="qvp-ico-play qvp-ico-play--sm" />
-        </view>
+      <!-- #ifndef APP-PLUS -->
+      <cover-view class="qvp-bar" :class="{ 'qvp-bar--fs': isFullScreen }" @click.stop>
+        <cover-view class="qvp-btn qvp-btn--play" @click.stop="togglePlay">
+          <cover-view v-if="isPlaying" class="qvp-ico-pause">
+            <cover-view class="qvp-pause-bar" />
+            <cover-view class="qvp-pause-bar" />
+          </cover-view>
+          <cover-view v-else class="qvp-ico-play qvp-ico-play--sm" />
+        </cover-view>
 
         <text class="qvp-time" :class="{ 'qvp-time--fs': isFullScreen }">
           {{ fmt(currentTime) }} / {{ fmt(duration) }}
         </text>
 
-        <!-- 自绘进度条：移动端走 touch 链（小程序会忽略鼠标绑定），
-             H5 桌面端由 @mousedown + window 鼠标事件驱动（运行时按 window 存在性守卫）；
-             避开微信原生 slider 同层渲染在部分基础库上的层级/样式问题 -->
-        <view
-          :id="barId"
-          class="qvp-progress"
-          :class="{ 'qvp-progress--fs': isFullScreen }"
-          @touchstart="onBarTouchStart"
-          @touchmove.stop.prevent="onBarTouchMove"
-          @touchend="onBarTouchEnd"
-          @mousedown="onBarMouseDown"
-        >
-          <view class="qvp-track">
-            <view class="qvp-filled" :style="{ width: progressPercent + '%' }" />
-            <view class="qvp-knob" :style="{ left: progressPercent + '%' }" />
-          </view>
-        </view>
+        <slider
+          class="qvp-slider"
+          :class="{ 'qvp-slider--fs': isFullScreen }"
+          :value="sliderValue"
+          :max="duration || 100"
+          activeColor="rgba(255,125,0,0.35)"
+          backgroundColor="rgba(255,255,255,0.35)"
+          :block-size="isFullScreen ? 12 : 14"
+          @change="onSliderChange"
+        />
 
         <template v-if="showSpeedButtons">
-          <view class="qvp-btn qvp-btn--step" @click.stop="fastRewind">
+          <cover-view class="qvp-btn qvp-btn--step" @click.stop="fastRewind">
             <text class="qvp-step-label"><text class="qvp-step-arrow">‹</text>{{ speedStep }}</text>
-          </view>
-          <view class="qvp-btn qvp-btn--step" @click.stop="fastForward">
+          </cover-view>
+          <cover-view class="qvp-btn qvp-btn--step" @click.stop="fastForward">
             <text class="qvp-step-label">{{ speedStep }}<text class="qvp-step-arrow">›</text></text>
-          </view>
+          </cover-view>
         </template>
 
-        <view v-if="showFullScreen" class="qvp-btn qvp-btn--fs" @click.stop="toggleFullScreen">
-          <view class="qvp-ico-fs">
-            <view class="qvp-fs-corner qvp-fs-tl" /><view class="qvp-fs-corner qvp-fs-tr" />
-            <view class="qvp-fs-corner qvp-fs-bl" /><view class="qvp-fs-corner qvp-fs-br" />
-          </view>
+        <cover-view v-if="showFullScreen" class="qvp-btn qvp-btn--fs" @click.stop="toggleFullScreen">
           <text class="qvp-ico qvp-ico--fs-label">{{ isFullScreen ? '退出' : '全屏' }}</text>
-        </view>
-      </view>
+        </cover-view>
+      </cover-view>
+      <!-- #endif -->
     </video>
   </view>
 </template>
 
 <script setup lang="ts">
-  import { computed, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
+  import { getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
 
   interface XyytVideoPlayerProps {
     /** 视频地址（必填） */
@@ -136,26 +128,38 @@
     (e: 'error', detail: any): void;
   }>();
 
-  // 组件内唯一 video id；配合 createVideoContext 的 scope 精确定位到本组件实例
-  const videoId = 'xyytVideoPlayer';
-
   // 关键：script setup 下必须传组件代理实例(instance.proxy)作作用域，
   // 传内部 instance 会让 requestFullScreen 等原生方法在各端(App/鸿蒙)静默失效。
   const instance = getCurrentInstance();
+
+  // 实例级唯一 video id：同一页面多实例时固定 id 会让 createVideoContext 定位到错误的 video。
+  // 用 Vue 全局递增的 instance.uid 作后缀（不能用 script setup 内的模块计数器——
+  // script setup 整体就是 setup 函数体，每次实例化都会重新初始化）
+  const videoId = 'xyytVideoPlayer-' + instance?.uid;
+
   let ctx: any = null;
+
+  // Android(App) 端使用系统原生控件，其余平台显示自定义控制栏。
+  // 条件编译必须写在脚本顶层：此前写在 computed 函数体内曾导致 App 端取值异常。
+  // 单声明 + 分支赋值（而非两份 const 声明）：vue-tsc 不做条件编译剥离，重复声明会报 TS2451
+  let appNativeControls: boolean;
+  // #ifdef APP-PLUS
+  appNativeControls = true;
+  // #endif
+  // #ifndef APP-PLUS
+  appNativeControls = false;
+  // #endif
+  // 注意：show-center-play-btn 与 controls 是相互独立的开关，不随 appNativeControls 联动：
+  // 非 Android 端需固定 false（否则原生中央按钮与自定义按钮叠加）；Android 原生控件自带
+  // 中央按钮，不受该属性影响（与 1.0.1 真机验证行为一致）。
 
   const isPlaying = ref(false);
   const isFullScreen = ref(false);
   const currentTime = ref(0);
   const duration = ref(0);
   const sliderValue = ref(0);
-  const dragging = ref(false);
   const isEnded = ref(false);
-
-  const durationReady = computed(() => duration.value > 0);
-  const progressPercent = computed(() =>
-    duration.value > 0 ? Math.min(100, (sliderValue.value / duration.value) * 100) : 0
-  );
+  let seekRetryTimer: ReturnType<typeof setTimeout> | null = null;
 
   /** 平台判定：iOS 全屏用竖屏(0)，其余用横屏(-90)。鸿蒙不属于 ios，走横屏。 */
   // 平台值在生命周期内不变，只查一次并缓存
@@ -194,16 +198,11 @@
 
   onMounted(() => {
     ctx = uni.createVideoContext(videoId, instance?.proxy);
-    // 预取进度条 rect，供 touch 兜底链使用（延迟到布局完成后再查）
-    setTimeout(() => queryBarRect(), 300);
   });
 
   onUnmounted(() => {
     ctx = null;
-    if (typeof window !== 'undefined') {
-      window.removeEventListener('mousemove', onWindowMouseMove);
-      window.removeEventListener('mouseup', onWindowMouseUp);
-    }
+    if (seekRetryTimer) clearTimeout(seekRetryTimer);
   });
 
   // ========== 播放控制 ==========
@@ -219,16 +218,27 @@
     else play();
   }
   function seek(seconds: number) {
-    const target = Math.max(0, Math.min(seconds, duration.value || seconds));
-    ctx?.seek(target);
+    if (!ctx) return;
+    const target = Math.max(0, seconds);
+    // 原生层（Android/iOS/鸿蒙）seek 可能因未就绪而静默失败，加一次延迟重试；
+    // 重试前比对 currentTime（由 timeupdate 回填），目标已达成则不重复 seek，各端安全无副作用
+    ctx.seek(target);
     currentTime.value = target;
     sliderValue.value = Math.floor(target);
+    // 500ms 后重试一次，确保原生层已处理
+    if (seekRetryTimer) clearTimeout(seekRetryTimer);
+    seekRetryTimer = setTimeout(() => {
+      seekRetryTimer = null;
+      if (Math.abs(currentTime.value - target) > 1) {
+        ctx?.seek(target);
+      }
+    }, 500);
   }
   function fastForward() {
-    seek((currentTime.value || 0) + props.speedStep);
+    seek(currentTime.value + props.speedStep);
   }
   function fastRewind() {
-    seek((currentTime.value || 0) - props.speedStep);
+    seek(currentTime.value - props.speedStep);
   }
 
   // ========== 全屏 ==========
@@ -256,100 +266,11 @@
     else exitFullScreen();
   }
 
-  // ========== 自绘进度条拖动（touch + H5 鼠标双通路） ==========
-  // 实测约束：uni-h5 会把 view 上的 @touchxxx 包装成 uni 事件——detail 为空对象、
-  // currentTarget 为无 getBoundingClientRect 的普通对象；桌面鼠标也不会触发 touch 链。
-  // 因此：
-  // - H5 桌面端走 @mousedown（原生 MouseEvent，target 为真实 DOM，可实时取 rect）
-  //   + window 上的 mousemove/mouseup；
-  // - 触摸端（小程序/App/移动端 H5）走 touch 链，rect 取缓存 →(若可用)detail，
-  //   每次交互结束后异步刷新缓存，避免滚动/布局变化导致过期。
-  const barId = 'xyytPlayerBar';
-  let barRect: { left: number; width: number } | null = null;
-  let barPercent = 0;
-
-  function queryBarRect() {
-    try {
-      uni.createSelectorQuery()
-        .in(instance?.proxy)
-        .select('#' + barId)
-        .boundingClientRect((r: any) => {
-          if (r && r.width > 0) barRect = { left: r.left, width: r.width };
-        })
-        .exec();
-    } catch {
-      /* 查询失败时沿用旧缓存 */
-    }
-  }
-
-  function percentFromX(x: number, rect: { left: number; width: number }): number {
-    return Math.max(0, Math.min(100, ((x - rect.left) / rect.width) * 100));
-  }
-
-  function previewBarTime() {
-    const sec = (barPercent / 100) * duration.value;
-    sliderValue.value = Math.floor(sec);
-    currentTime.value = sec;
-  }
-
-  // ----- touch 链（小程序 / App / 移动端 H5） -----
-  function onBarTouchStart(e: any) {
-    if (!durationReady.value || mouseDragging) return;
-    let rect = barRect;
-    const d = e?.detail;
-    if (d && typeof d.width === 'number' && d.width > 0) {
-      rect = { left: d.left ?? 0, width: d.width };
-    }
-    if (!rect) return;
-    barRect = rect;
-    dragging.value = true;
-    const t = e?.touches?.[0];
-    barPercent = percentFromX(Number(t?.clientX ?? t?.pageX ?? rect.left), rect);
-    previewBarTime();
-  }
-  function onBarTouchMove(e: any) {
-    if (!dragging.value || !barRect) return;
-    const t = e?.changedTouches?.[0];
-    if (!t) return;
-    barPercent = percentFromX(Number(t.clientX ?? t.pageX ?? 0), barRect);
-    previewBarTime();
-  }
-  function onBarTouchEnd() {
-    if (!dragging.value || mouseDragging) return;
-    dragging.value = false;
-    // 未发生位移时 barPercent 即 tap 位置：点击轨道直接 seek
-    seek((barPercent / 100) * duration.value);
-    queryBarRect(); // 交互后刷新缓存，供滚动/布局变化后的下一次拖动使用
-  }
-
-  // ----- H5 桌面鼠标链（仅浏览器存在 window 时生效，小程序端整段跳过） -----
-  let mouseDragging = false;
-  function onBarMouseDown(e: any) {
-    if (!durationReady.value || typeof window === 'undefined') return;
-    const el = e?.target;
-    const rect =
-      el && typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : barRect;
-    if (!rect || rect.width <= 0) return;
-    barRect = { left: rect.left, width: rect.width };
-    mouseDragging = true;
-    dragging.value = true;
-    barPercent = percentFromX(Number(e?.clientX ?? 0), barRect);
-    previewBarTime();
-    window.addEventListener('mousemove', onWindowMouseMove);
-    window.addEventListener('mouseup', onWindowMouseUp);
-  }
-  function onWindowMouseMove(e: MouseEvent) {
-    if (!mouseDragging || !barRect) return;
-    barPercent = percentFromX(e.clientX, barRect);
-    previewBarTime();
-  }
-  function onWindowMouseUp() {
-    if (!mouseDragging) return;
-    mouseDragging = false;
-    dragging.value = false;
-    seek((barPercent / 100) * duration.value);
-    window.removeEventListener('mousemove', onWindowMouseMove);
-    window.removeEventListener('mouseup', onWindowMouseUp);
+  // ========== 原生 slider 拖动 ==========
+  function onSliderChange(e: any) {
+    const val = Number(e?.detail?.value ?? 0);
+    sliderValue.value = val;
+    seek(val);
   }
 
   // ========== 视频事件 ==========
@@ -374,16 +295,12 @@
     const du = Number(e?.detail?.duration ?? 0);
     currentTime.value = ct;
     if (du > 0) duration.value = du;
-    // 拖动期间不让 timeupdate 覆盖滑块，避免与手指位置打架
-    if (!dragging.value) sliderValue.value = Math.floor(ct);
+    sliderValue.value = Math.floor(ct);
     emit('timeupdate', { currentTime: ct, duration: du });
   }
   function onLoadedMetadata(e: any) {
     const du = Number(e?.detail?.duration ?? 0);
     if (du > 0) duration.value = du;
-  }
-  function onWaiting() {
-    // 缓冲中：不改变 isPlaying，等待自动恢复
   }
   function onError(e: any) {
     emit('error', e?.detail ?? e);
@@ -393,8 +310,6 @@
     // 全屏是否成功的唯一判据是回调，而非“API 已调用”
     isFullScreen.value = !!e?.detail?.fullScreen;
     emit('fullscreenchange', { fullScreen: isFullScreen.value });
-    // 布局变化后刷新进度条 rect（与 900ms 全屏过渡守卫对齐，避免取到过渡中间态）
-    setTimeout(() => queryBarRect(), 950);
     // 过渡确认后按切换前意图补发 play()（幂等，已播完则不恢复）
     if (wasPlayingBeforeFs && !isPlaying.value && !isEnded.value) {
       setTimeout(() => {
@@ -421,10 +336,10 @@
     width: 100%;
     position: relative;
     background: #000;
-    /* 高度兜底：父级未给高度时 height:100% 会塌陷为 0，
-       用 16:9 宽高比保证播放器始终可见；父级有固定高度时仍走 height:100% */
-    aspect-ratio: 16 / 9;
-    height: auto;
+    overflow: hidden;
+    /* padding-bottom 56.25% = 16:9 宽高比（比 aspect-ratio 在 Android 原生 video 上更可靠） */
+    height: 0;
+    padding-bottom: 56.25%;
   }
   .qvp-video {
     position: absolute;
@@ -462,15 +377,20 @@
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.12);
   }
+  .qvp-bar--fs .qvp-btn--play {
+    width: 40rpx;
+    height: 40rpx;
+    min-width: 40rpx;
+  }
   .qvp-ico-pause {
     display: flex;
     flex-direction: row;
     gap: 10rpx;
   }
   .qvp-pause-bar {
-    width: 8rpx;
-    height: 30rpx;
-    border-radius: 4rpx;
+    width: 10rpx;
+    height: 20rpx;
+    border-radius: 2rpx;
     background: #fff;
   }
 
@@ -504,7 +424,7 @@
     opacity: 0.7;
   }
 
-  /* 底部控制栏 */
+  /* 底部控制栏：cover-view 在 H5/小程序端等同 div，flex 完全可用；Android 端整栏不渲染（原生控件） */
   .qvp-bar {
     position: absolute;
     left: 0;
@@ -513,17 +433,20 @@
     height: 84rpx;
     padding: 0 24rpx;
     /* #ifdef H5 */
-    /* 仅 H5 全屏时控制栏贴屏幕底，需预留刘海屏/手势条安全区；
-       App/小程序全屏由原生层接管、自绘栏不到屏幕底，加安全区只会造成底部空隙 */
     padding-bottom: constant(safe-area-inset-bottom);
     padding-bottom: env(safe-area-inset-bottom);
     /* #endif */
     display: flex;
     flex-direction: row;
     align-items: center;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.62) 88%);
+    background: rgba(0, 0, 0, 0.35);
     pointer-events: auto;
     box-sizing: content-box;
+  }
+  /* 全屏模式：控制栏整体缩小一档 */
+  .qvp-bar--fs {
+    height: 60rpx;
+    padding: 0 16rpx;
   }
   .qvp-btn {
     min-width: 64rpx;
@@ -534,12 +457,16 @@
     justify-content: center;
     border-radius: 32rpx;
     pointer-events: auto;
-    transition: background-color 0.15s ease, opacity 0.15s ease;
+  }
+  .qvp-bar--fs .qvp-btn {
+    min-width: 44rpx;
+    height: 44rpx;
+    border-radius: 22rpx;
   }
   .qvp-btn:active {
     background: rgba(255, 255, 255, 0.18);
   }
-  /* H5 桌面端悬停反馈；触摸设备 hover 恒 false，不会误触发 */
+  /* H5 桌面端悬停反馈 */
   @media (hover: hover) {
     .qvp-btn:hover {
       background: rgba(255, 255, 255, 0.14);
@@ -556,6 +483,10 @@
     margin-left: 8rpx;
     padding: 0 8rpx;
   }
+  .qvp-bar--fs .qvp-btn--step {
+    margin-left: 6rpx;
+    padding: 0 6rpx;
+  }
   .qvp-step-label {
     display: inline-block;
     color: #fff;
@@ -567,54 +498,32 @@
     background: rgba(255, 255, 255, 0.1);
     white-space: nowrap;
   }
+  .qvp-bar--fs .qvp-step-label {
+    font-size: 18rpx;
+    padding: 6rpx 8rpx;
+    border-radius: 18rpx;
+  }
   .qvp-step-arrow {
     font-size: 26rpx;
     line-height: 1;
   }
 
-  /* 全屏：四角框图标 + 文字 */
+  /* 全屏按钮 */
   .qvp-btn--fs {
     margin-left: 12rpx;
     gap: 8rpx;
   }
-  .qvp-ico-fs {
-    position: relative;
-    width: 26rpx;
-    height: 26rpx;
-  }
-  .qvp-fs-corner {
-    position: absolute;
-    width: 10rpx;
-    height: 10rpx;
-  }
-  .qvp-fs-tl {
-    left: 0;
-    top: 0;
-    border-left: 3rpx solid #fff;
-    border-top: 3rpx solid #fff;
-  }
-  .qvp-fs-tr {
-    right: 0;
-    top: 0;
-    border-right: 3rpx solid #fff;
-    border-top: 3rpx solid #fff;
-  }
-  .qvp-fs-bl {
-    left: 0;
-    bottom: 0;
-    border-left: 3rpx solid #fff;
-    border-bottom: 3rpx solid #fff;
-  }
-  .qvp-fs-br {
-    right: 0;
-    bottom: 0;
-    border-right: 3rpx solid #fff;
-    border-bottom: 3rpx solid #fff;
+  .qvp-bar--fs .qvp-btn--fs {
+    margin-left: 8rpx;
+    gap: 6rpx;
   }
   .qvp-ico--fs-label {
     font-size: 22rpx;
     line-height: 1;
     color: #fff;
+  }
+  .qvp-bar--fs .qvp-ico--fs-label {
+    font-size: 18rpx;
   }
   .qvp-time {
     display: inline-block;
@@ -626,52 +535,15 @@
     font-variant-numeric: tabular-nums;
   }
   .qvp-time--fs {
-    font-size: 26rpx;
+    font-size: 20rpx;
   }
 
-  /* 自绘进度条：触摸热区 44rpx，视觉细轨道居中 */
-  .qvp-progress {
+  /* 原生 slider 进度条：flex:1 占满剩余空间 */
+  .qvp-slider {
     flex: 1;
-    height: 64rpx;
-    display: flex;
-    align-items: center;
-    pointer-events: auto;
+    margin: 0 16rpx;
   }
-  .qvp-track {
-    position: relative;
-    width: 100%;
-    height: 6rpx;
-    border-radius: 3rpx;
-    background: rgba(255, 255, 255, 0.28);
-  }
-  .qvp-filled {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    border-radius: 3rpx;
-    /* 主题色来自 uni.scss 全局变量 */
-    background: $xyyt-primary;
-  }
-  .qvp-knob {
-    position: absolute;
-    top: 50%;
-    width: 24rpx;
-    height: 24rpx;
-    margin-top: -12rpx;
-    margin-left: -12rpx;
-    border-radius: 12rpx;
-    background: #fff;
-    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.4);
-  }
-  .qvp-progress--fs .qvp-track {
-    height: 8rpx;
-  }
-  .qvp-progress--fs .qvp-knob {
-    width: 30rpx;
-    height: 30rpx;
-    margin-top: -15rpx;
-    margin-left: -15rpx;
-    border-radius: 15rpx;
+  .qvp-slider--fs {
+    margin: 0 8rpx;
   }
 </style>

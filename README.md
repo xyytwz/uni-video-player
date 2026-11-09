@@ -8,10 +8,13 @@
 
 | 平台 | 定位 | 验证状态 |
 | --- | --- | --- |
-| App（鸿蒙 HarmonyOS NEXT） | 主目标 | 编译验证通过（`build:app-harmony`），建议真机复验 |
-| App（Android / iOS） | 兼容 | 编译验证通过，建议真机复验 |
-| 微信小程序 | 兼容 | 开发者工具 + 真机实测通过 |
-| H5 | 兼容 | 浏览器实测通过 |
+| App（鸿蒙 HarmonyOS NEXT） | 主目标 | **真机验证通过** |
+| App（Android） | 兼容 | **真机验证通过**（必须使用自定义基座） |
+| App（iOS） | 兼容 | 编译通过，**待真机验证** |
+| 微信小程序 | 兼容 | **开发者工具 + 真机验证通过** |
+| H5 | 兼容 | **浏览器验证通过** |
+
+控制栏策略：H5 / 鸿蒙 / 微信小程序为自定义控制栏（cover-view + 原生 slider 进度条）；App Android/iOS 为系统原生控件（真机实测 Android 自定义控制栏会导致原生 video 黑屏无法播放，1.0.2 起固定回退），各端渲染路径由条件编译隔离。
 
 各端差异与踩坑说明见插件文档：[`src/uni_modules/xyyt-video-player/readme.md`](src/uni_modules/xyyt-video-player/readme.md)。
 

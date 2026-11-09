@@ -1,7 +1,7 @@
 {
   "id": "xyyt-video-player",
   "displayName": "xyyt-video-player 鸿蒙跨端视频播放器",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "以鸿蒙（HarmonyOS NEXT / App-Harmony）为主目标平台的跨端视频播放组件，兼容 App Android/iOS、微信小程序、H5；支持全屏、播放/暂停、快进快退、拖动进度",
   "keywords": [
     "视频",
@@ -13,7 +13,9 @@
     "harmony"
   ],
   "engines": {
-    "HBuilderX": "^4.14"
+    "HBuilderX": "^4.14",
+    "uni-app": "^3.1.0",
+    "uni-app-x": "^3.1.0"
   },
   "dcloudext": {
     "sale": {
@@ -50,7 +52,8 @@
     "minHBuilderX": "4.14",
     "darkmode": "n",
     "i18n": "n",
-    "widescreen": "n"
+    "widescreen": "n",
+    "vapor": "-"
   },
   "uni_modules": {
     "dependencies": [],
@@ -68,31 +71,52 @@
         "aliyun": "n"
       },
       "client": {
-        "Vue": {
-          "vue2": "n",
-          "vue3": "y"
+        "uni-app": {
+          "vue": {
+            "vue2": "n",
+            "vue3": "y"
+          },
+          "web": {
+            "safari": "y",
+            "chrome": "y"
+          },
+          "app": {
+            "vue": "y",
+            "nvue": "n",
+            "android": "y",
+            "ios": "y",
+            "harmony": "y"
+          },
+          "mp": {
+            "weixin": "y",
+            "alipay": "u",
+            "toutiao": "u",
+            "baidu": "u",
+            "kuaishou": "u",
+            "jd": "u",
+            "harmony": "u",
+            "qq": "u",
+            "lark": "u",
+            "xhs": "u"
+          },
+          "quickapp": {
+            "huawei": "u",
+            "union": "u"
+          }
         },
-        "App": {
-          "app-vue": "y",
-          "app-nvue": "n"
-        },
-        "web": {
-          "chrome": "y",
-          "ie": "u",
-          "edge": "y",
-          "firefox": "y",
-          "safari": "y"
-        },
-        "小程序": {
-          "微信": "y",
-          "阿里": "u",
-          "百度": "u",
-          "字节跳动": "u",
-          "QQ": "u"
-        },
-        "快应用": {
-          "华为": "u",
-          "联盟": "u"
+        "uni-app-x": {
+          "web": {
+            "safari": "u",
+            "chrome": "u"
+          },
+          "app": {
+            "android": "u",
+            "ios": "u",
+            "harmony": "u"
+          },
+          "mp": {
+            "weixin": "u"
+          }
         }
       }
     }
