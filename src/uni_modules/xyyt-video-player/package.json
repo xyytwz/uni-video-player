@@ -67,8 +67,8 @@
     "titleColor": "#000000",
     "platforms": {
       "cloud": {
-        "tcb": "n",
-        "aliyun": "n"
+        "tcb": "x",
+        "aliyun": "x"
       },
       "client": {
         "uni-app": {
