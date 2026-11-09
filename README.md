@@ -94,6 +94,7 @@ uni-video-demo/
 - 示例页 `videoUrl` 为公网测试地址，请替换为你自己的可访问视频。
 - 所有报错若为「找不到模块 vue / uni」，是尚未 `npm install`，安装依赖后消失。
 - 鸿蒙真机运行时 HBuilderX 会把本机签名配置（`manifest.json` 的 `app-harmony.distribute.signingConfigs`，含证书路径与密码）自动写入工程；**提交/上传前请删除该节**（下次真机运行会自动重建），避免敏感信息入库入市。
+- **上传插件市场前**：右键上传 uni_modules 插件本体时 IDE 只打包插件目录，工程根杂物不影响；若提交「完整项目示例」，建议按 git 跟踪清单打包（排除 `dist\`、`node_modules\`、`.hbuilderx\`、`.qoder\`），而不是删除 `.qoder\`——它是 IDE 会话历史缓存，删除会丢失本地对话记录。
 
 ## 文档与反馈
 
